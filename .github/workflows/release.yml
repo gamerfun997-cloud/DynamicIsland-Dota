@@ -1,6 +1,7 @@
 name: Release
 
 on:
+  workflow_dispatch:
   release:
     types: [published]
 
@@ -18,7 +19,16 @@ jobs:
       - name: Build MediaBridge
         shell: pwsh
         run: .\media_bridge\csharp\build.ps1
+      - name: Save build files
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dynamic-island-v2.5.3
+          path: |
+            dynamic_island.lua
+            media_bridge/media_bridge.exe
       - name: Upload two release files
+        if: github.event_name == 'release'
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
